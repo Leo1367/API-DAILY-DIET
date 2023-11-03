@@ -1,12 +1,17 @@
 import mongoose from 'mongoose';
+import { config } from 'dotenv';
+
+config()
+
+const { PASSWORD_DB, USER_DB } = process.env;
+const dbURL = `mongodb+srv://${USER_DB}:${PASSWORD_DB}@apicluster.wsvxghx.mongodb.net/`;
 
 const conectDB = async () => {
     try {
-        await mongoose.connect(process.env.URL_DB);
-        console.log('MongoDB conectado')
-    } catch (error) {
-        console.error('Erro ao conectar com MongoDB:', error);
-        process.exit(1);
+        mongoose.connect(dbURL);
+        console.log("Connected to MongoDB");
+    } catch (err) {
+        console.error("Error connecting to MongoDB:", err);
     }
 }
 

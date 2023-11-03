@@ -90,5 +90,34 @@ const getOneMeal = async (req, res) => {
     }
 };
 
+const calculateMetrics = async (req, res) => {
+    try {
+        const userId = req.cookies.userId;
 
-export { createMeal, deleteMeal, updateMeal, getOneMeal, listMeals };
+        if (!userId) {
+            return res.status(401).json({ msg: 'Usuário não autenticado' });
+        }
+
+        const totalMeals = await Meal.countDocuments({ user: userId });
+
+        const dietMeals = await Meal.countDocuments({ user: userId, isDiet: true });
+
+        const outOfDietMeals = await Meal.countDocuments({ user: userId, isDiet: false });
+
+        const bestDietSequence = await Meal.find({ user: userId, isDiet: true })
+            .sort({ dateTime: -1 })
+
+
+        res.status(200).json({
+            totalMeals,
+            dietMeals,
+            outOfDietMeals,
+            bestDietSequence,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Ocorreu um erro no servidor, tente novamente mais tarde' });
+    }
+};
+
+export { createMeal, deleteMeal, updateMeal, getOneMeal, listMeals, calculateMetrics }; 
